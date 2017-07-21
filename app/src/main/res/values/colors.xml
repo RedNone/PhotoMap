@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimary">#4FC3F7</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+
+    <color name="colorProgressBarStart">#FF4081</color>
+    <color name="colorProgressBarEnd">#fd78a6</color>
+
+    <color name="colorPhotoPreviewPrimary">#000000</color>
+    <color name="colorPhotoPreviewPrimaryDark">#000000</color>
+    <color name="colorPhotoPreviewAccent">#FF4081</color>
+
+
+    <color name="colorText">#ffffff</color>
+    <color name="colorFabEnabled">#2196F3</color>
+    <color name="colorFabDisabled">#9E9E9E</color>
+    <color name="colorFabCamera">#ffffff</color>
+    <color name="colorButtons">#4FC3F7</color>
+    <color name="dark">#000000</color>
+
+    <color name="settings_nature">#388E3C</color>
+    <color name="settings_friends">#FF0068</color>
+    <color name="settings_default">#03A9F4</color>
+    <color name="settings_food">#fff718</color>
+
+    <color name="circly_imageview">#ffffff</color>
 </resources>
