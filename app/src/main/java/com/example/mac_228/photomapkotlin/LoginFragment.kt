@@ -31,13 +31,13 @@ class LoginFragment : BaseFragment(), View.OnClickListener {
                               savedInstanceState: Bundle?): View? {
         var view: View = inflater!!.inflate(R.layout.fragment_login, container, false)
 
-        mEmail = view.findViewById(R.id.emailEditText)
-        mPassword = view.findViewById(R.id.passwordEditText)
+        mEmail = view.findViewById(R.id.emailEditText) as EditText
+        mPassword = view.findViewById(R.id.passwordEditText) as EditText
 
-        loginButton = view.findViewById(R.id.signInButton)
-        createLoginButton = view.findViewById(R.id.createLoginButton)
+        loginButton = view.findViewById(R.id.signInButton) as Button
+        createLoginButton = view.findViewById(R.id.createLoginButton) as Button
 
-        mLayout = view.findViewById(R.id.loginCoordinator)
+        mLayout = view.findViewById(R.id.loginCoordinator) as CoordinatorLayout
 
         loginButton.setOnClickListener(this)
         createLoginButton.setOnClickListener(this)
