@@ -64,7 +64,27 @@ class LoginFragment : BaseFragment(), View.OnClickListener {
                 Log.d(TAG, "signInWithEmail:failure", j.getException())
                 Snackbar.make(mLayout, R.string.incorrectInput, Snackbar.LENGTH_SHORT).show()
             }
+            this.dismissProgressDialog()
+        }
+    }
 
+    fun createAcc(){
+        val email: String = mEmail.text.toString()
+        val password: String = mPassword.text.toString()
+
+        if (!validateForm(email, password)) {
+            return
+        }
+
+        showProgressDialog()
+
+        FireBaseManager.mFireBaseAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener {  j ->
+            if(j.isSuccessful){
+                Log.d(TAG, "createUserWithEmail:success")
+            }else {
+                Log.d(TAG, "createUserWithEmail:failure", j.getException())
+                Snackbar.make(mLayout, R.string.incorrectInput, Snackbar.LENGTH_SHORT).show()
+            }
             this.dismissProgressDialog()
         }
     }
@@ -91,7 +111,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(p0: View?) {
         when (p0!!.id) {
             R.id.signInButton -> signIn()
-            R.id.createLoginButton -> showProgressDialog()
+            R.id.createLoginButton -> createAcc()
         }
     }
 

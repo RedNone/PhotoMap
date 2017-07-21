@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         if (FireBaseManager.mFireBaseAuth.currentUser == null) {
             changeFragment(FRAGMENT_LOGIN)
         } else {
-            changeFragment(FRAGMENT_MAIN)
+            changeFragment(FRAGMENT_LOGIN)
         }
 
     }
