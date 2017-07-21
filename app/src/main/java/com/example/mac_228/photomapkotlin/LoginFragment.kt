@@ -3,7 +3,9 @@ package com.example.mac_228.photomapkotlin
 
 import android.os.Bundle
 import android.support.design.widget.CoordinatorLayout
+import android.support.design.widget.Snackbar
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,22 +46,40 @@ class LoginFragment : BaseFragment(), View.OnClickListener {
     }
 
 
-    fun signIn(){
-        if(!validateForm( mEmail.text.toString(),mPassword.text.toString())) {
+    fun signIn() {
+
+        val email: String = mEmail.text.toString()
+        val password: String = mPassword.text.toString()
+
+        if (!validateForm(email, password)) {
             return
+        }
+
+        showProgressDialog()
+
+        FireBaseManager.mFireBaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { j ->
+            if (j.isSuccessful) {
+                Log.d(TAG, "signInWithEmail:success")
+            } else {
+                Log.d(TAG, "signInWithEmail:failure", j.getException())
+                Snackbar.make(mLayout, R.string.incorrectInput, Snackbar.LENGTH_SHORT).show()
+            }
+
+            this.dismissProgressDialog()
         }
     }
 
-    fun validateForm(email: String, password: String): Boolean{
+
+    fun validateForm(email: String, password: String): Boolean {
 
         var validateResult: Boolean = true
 
-        if(TextUtils.isEmpty(email)){
+        if (TextUtils.isEmpty(email)) {
             mEmail.setError(context.getString(R.string.validError))
             validateResult = false
         }
 
-        if(TextUtils.isEmpty(password)){
+        if (TextUtils.isEmpty(password)) {
             mPassword.setError(context.getString(R.string.validError))
             validateResult = false
         }
@@ -69,7 +89,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener {
 
 
     override fun onClick(p0: View?) {
-        when(p0!!.id){
+        when (p0!!.id) {
             R.id.signInButton -> signIn()
             R.id.createLoginButton -> showProgressDialog()
         }
