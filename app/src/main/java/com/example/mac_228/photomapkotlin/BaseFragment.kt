@@ -5,25 +5,29 @@ import android.app.ProgressDialog
 import android.support.v4.app.Fragment
 
 
-open class BaseFragment : Fragment(){
+open class BaseFragment : Fragment() {
 
     protected var mProgressDialog: ProgressDialog? = null
 
     fun showProgressDialog() {
-        if(mProgressDialog == null){
-            mProgressDialog = ProgressDialog(context) .let{ j ->
-                j.setMessage(context.getString(R.string.loading))
-                j.isIndeterminate = true
-                j
-            }
-        }
+        val progressDialog = mProgressDialog ?: createProgressDialog()
+        mProgressDialog = progressDialog
+        progressDialog.show()
+    }
 
-        mProgressDialog!!.show()
+    private fun createProgressDialog(): ProgressDialog {
+        val dialog = ProgressDialog(context)
+        dialog.setMessage(context.getString(R.string.loading))
+        dialog.isIndeterminate = true
+        return dialog
     }
 
     fun dismissProgressDialog() {
-        if(mProgressDialog != null && mProgressDialog!!.isShowing){
-            mProgressDialog!!.dismiss()
+        val progressDialog = mProgressDialog
+
+        if (progressDialog != null && progressDialog.isShowing) {
+            progressDialog.dismiss()
+            mProgressDialog = null
         }
     }
 }
