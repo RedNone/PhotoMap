@@ -1,8 +1,9 @@
-package com.example.mac_228.photomapkotlin
+package com.example.mac_228.photomapkotlin.Fragments
 
 
 import android.app.ProgressDialog
 import android.support.v4.app.Fragment
+import com.example.mac_228.photomapkotlin.R
 
 
 open class BaseFragment : Fragment() {

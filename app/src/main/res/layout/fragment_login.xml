@@ -4,7 +4,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/loginCoordinator"
-        tools:context="com.example.mac_228.photomapkotlin.LoginFragment">
+        tools:context="com.example.mac_228.photomapkotlin.Fragments.LoginFragment">
 
 
         <ScrollView
