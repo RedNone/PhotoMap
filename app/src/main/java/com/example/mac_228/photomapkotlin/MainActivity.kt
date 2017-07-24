@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toolbar
+import android.support.v7.widget.Toolbar
 import com.example.mac_228.photomapkotlin.Fragments.ErrorFragment
 import com.example.mac_228.photomapkotlin.Fragments.LoginFragment
 import com.example.mac_228.photomapkotlin.Fragments.MainFragment
@@ -27,11 +27,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-       /* toolbar = findViewById(R.id.toolbar) as Toolbar
+        toolbar = findViewById(R.id.toolbar) as Toolbar
+        setSupportActionBar(toolbar)
 
-        setSupportActionBar(toolbar)*/
-
-        FirebaseApp.initializeApp(this)
         FirebaseApp.initializeApp(this)
 
         if (FireBaseManager.mFireBaseAuth.currentUser == null) {
