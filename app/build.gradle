@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 25
@@ -23,30 +22,42 @@ android {
 
 }
 
+buildscript {
+    ext.google_services_version = '10.2.6'
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    //Kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
+    //Google play services
+    compile "com.google.android.gms:play-services-maps:$google_services_version"
+    compile "com.google.android.gms:play-services-location:$google_services_version"
+    compile "com.google.android.gms:play-services-places:$google_services_version"
+    compile "com.google.firebase:firebase-auth:$google_services_version"
+    compile "com.google.firebase:firebase-database:$google_services_version"
+
+    //Android support libraries
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.google.android.gms:play-services-maps:10.2.6'
-    compile 'com.google.android.gms:play-services-location:10.2.6'
-    compile 'com.google.android.gms:play-services-places:10.2.6'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.github.chrisbanes:PhotoView:2.0.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.google.firebase:firebase-auth:10.2.6'
-    compile 'com.google.firebase:firebase-database:10.2.6'
+
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'com.github.chrisbanes:PhotoView:2.0.0'
+
     testCompile 'junit:junit:4.12'
 }
-apply plugin: 'com.google.gms.google-services'
 
 repositories {
-    mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
+    maven { url 'https://maven.google.com' }
+    maven { url "https://jitpack.io" }
 }
+
