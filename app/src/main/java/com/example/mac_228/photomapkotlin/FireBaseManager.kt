@@ -5,5 +5,5 @@ import com.google.firebase.auth.FirebaseAuth
 
 object FireBaseManager {
 
-    val mFireBaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    val mFireBaseAuth = FirebaseAuth.getInstance()
 }

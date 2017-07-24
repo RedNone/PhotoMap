@@ -2,12 +2,14 @@ package com.example.mac_228.photomapkotlin
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.support.v4.app.ActivityCompat
+import android.widget.Toolbar
 import com.example.mac_228.photomapkotlin.Fragments.ErrorFragment
 import com.example.mac_228.photomapkotlin.Fragments.LoginFragment
 import com.example.mac_228.photomapkotlin.Fragments.MainFragment
+import com.google.firebase.FirebaseApp
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,10 +21,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     val REQUEST_PERMISSON = 1
+    lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+       /* toolbar = findViewById(R.id.toolbar) as Toolbar
+
+        setSupportActionBar(toolbar)*/
+
+        FirebaseApp.initializeApp(this)
+        FirebaseApp.initializeApp(this)
 
         if (FireBaseManager.mFireBaseAuth.currentUser == null) {
             changeFragment(FRAGMENT_LOGIN)
@@ -31,7 +41,6 @@ class MainActivity : AppCompatActivity() {
                 changeFragment(FRAGMENT_MAIN)
             }
         }
-
     }
 
    fun  checkPermissions(): Boolean {
