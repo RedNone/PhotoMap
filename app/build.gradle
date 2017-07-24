@@ -1,12 +1,14 @@
 apply plugin: 'com.android.application'
+
 apply plugin: 'kotlin-android'
+
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.example.mac_228.photomapkotlin"
-        minSdkVersion 19
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -18,6 +20,25 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    productFlavors {
+
+        // Build variant with minSdk 16 to include Facebook and FirebaseUI libraries.
+        minSdkJellybean {
+            minSdkVersion 16
+        }
+
+        // Build variant with minSdk 14, excludes Facebook and FirebaseUI libraries.
+        minSdkIcs {
+            minSdkVersion 14
+        }
+
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
 
 }
