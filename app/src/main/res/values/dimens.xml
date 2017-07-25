@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<dimen name="mapFab_margin">10dp</dimen>
+<dimen name="fab_margin">16dp</dimen>
+<dimen name="photo_details_icons">10dp</dimen>
+<dimen name="photo_details_items">20dp</dimen>
+<dimen name="photo_details_text">15dp</dimen>
+<dimen name="settings_thickness">2dp</dimen>
+<dimen name="settings_innerRadius">15dp</dimen>
+</resources>

@@ -156,7 +156,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
         }
     }
 
-    private fun openPictureDialog(typeOfCall: Int){
+    private fun openPictureDialog(typeOfCall: Int) {
         var pictureDialog = PictureDialog(this)
 
         if (typeOfCall == BUTTON_PRESS) {
@@ -254,12 +254,9 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
     }
 
-    override fun onInfoWindowClick(p0: Marker) {
+    override fun onInfoWindowClick(p0: Marker) {}
 
-    }
-
-    override fun onMapLongClick(p0: LatLng) {
-    }
+    override fun onMapLongClick(p0: LatLng) {  openPictureDialog(LONG_PRESS_MAP) }
 
     override fun onLocationChanged(p0: Location?) {
 

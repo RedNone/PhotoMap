@@ -1,5 +1,6 @@
-package com.example.mac_228.photomapkotlin
+package com.example.mac_228.photomapkotlin.Activity
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -8,9 +9,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import com.example.mac_228.photomapkotlin.FireBaseManager
 import com.example.mac_228.photomapkotlin.Fragments.ErrorFragment
 import com.example.mac_228.photomapkotlin.Fragments.LoginFragment
 import com.example.mac_228.photomapkotlin.Fragments.MainFragment
+import com.example.mac_228.photomapkotlin.R
 import com.google.firebase.FirebaseApp
 
 
@@ -58,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             return true
         }
         if (id == R.id.action_settings) {
-           // startActivity(Intent(this, SettingsActivity::class))
+            startActivity(Intent(this, SettingsActivity::class.java))
             return true
         }
         return super.onOptionsItemSelected(item)

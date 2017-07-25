@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import com.example.mac_228.photomapkotlin.FireBaseManager
-import com.example.mac_228.photomapkotlin.MainActivity
+import com.example.mac_228.photomapkotlin.Activity.MainActivity
 import com.example.mac_228.photomapkotlin.R
 
 

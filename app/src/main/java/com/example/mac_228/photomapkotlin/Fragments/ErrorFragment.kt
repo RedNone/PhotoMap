@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.example.mac_228.photomapkotlin.MainActivity
+import com.example.mac_228.photomapkotlin.Activity.MainActivity
 import com.example.mac_228.photomapkotlin.R
 
 
