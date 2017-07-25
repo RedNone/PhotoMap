@@ -6,6 +6,8 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.view.Menu
+import android.view.MenuItem
 import com.example.mac_228.photomapkotlin.Fragments.ErrorFragment
 import com.example.mac_228.photomapkotlin.Fragments.LoginFragment
 import com.example.mac_228.photomapkotlin.Fragments.MainFragment
@@ -41,7 +43,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-   fun  checkPermissions(): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.getItemId()
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_logOut) {
+            FireBaseManager.mFireBaseAuth.signOut()
+            changeFragment(FRAGMENT_LOGIN)
+            return true
+        }
+        if (id == R.id.action_settings) {
+           // startActivity(Intent(this, SettingsActivity::class))
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    fun  checkPermissions(): Boolean {
         var writePermission = (ContextCompat.checkSelfPermission
                                 (this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
         var locationPermission = (ContextCompat.checkSelfPermission

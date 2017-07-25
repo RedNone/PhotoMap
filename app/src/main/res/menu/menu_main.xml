@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.example.mac_228.photomap.Activity.MainActivity">
+    <item
+        android:id="@+id/action_logOut"
+        android:icon="@mipmap/ic_logout"
+        android:orderInCategory="100"
+        android:title="@string/logOut"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@mipmap/ic_file_document_box"
+        android:orderInCategory="2"
+        android:title="@string/action_settings"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_search"
+        android:title="@android:string/search_go"
+        android:icon="@mipmap/ic_magnify"
+        android:orderInCategory="3"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        />
+</menu>

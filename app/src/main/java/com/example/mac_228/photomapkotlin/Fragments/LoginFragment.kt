@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -45,7 +46,21 @@ class LoginFragment : BaseFragment() {
         loginButton.setOnClickListener { signIn() }
         createLoginButton.setOnClickListener { createAcc() }
 
+        setHasOptionsMenu(true)
+
         return view
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        val action_logout = menu.findItem(R.id.action_logOut)
+        val action_settings = menu.findItem(R.id.action_settings)
+        val action_search = menu.findItem(R.id.action_search)
+
+        action_logout.isVisible = false
+        action_settings.isVisible = false
+        action_search.isVisible = false
     }
 
 
