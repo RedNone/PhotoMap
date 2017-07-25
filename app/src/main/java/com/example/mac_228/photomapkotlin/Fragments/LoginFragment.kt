@@ -11,9 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import com.example.mac_228.photomapkotlin.FireBaseManager
-import com.example.mac_228.photomapkotlin.MainActivity
-import com.example.mac_228.photomapkotlin.R
+import com.example.mac_228.photomapkotlin.*
 
 
 class LoginFragment : BaseFragment() {
@@ -62,7 +60,7 @@ class LoginFragment : BaseFragment() {
         FireBaseManager.mFireBaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { result ->
                     if (result.isSuccessful) {
-                        (activity as MainActivity).changeFragment(MainActivity.FRAGMENT_MAIN)
+                        activity.changeFragment(FragmentType.MAIN)
                         Log.d(TAG, "signInWithEmail:success")
                     } else {
                         Log.e(TAG, "signInWithEmail:failure", result.exception)
@@ -85,7 +83,7 @@ class LoginFragment : BaseFragment() {
         FireBaseManager.mFireBaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { result ->
                     if (result.isSuccessful) {
-                        (activity as MainActivity).changeFragment(MainActivity.FRAGMENT_MAIN)
+                        activity.changeFragment(FragmentType.MAIN)
                         Log.d(TAG, "createUserWithEmail:success")
                     } else {
                         Log.d(TAG, "createUserWithEmail:failure", result.exception)

@@ -3,6 +3,7 @@ package com.example.mac_228.photomapkotlin.Fragments
 
 import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.support.design.widget.TabLayout.OnTabSelectedListener
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
@@ -15,7 +16,7 @@ import com.example.mac_228.photomapkotlin.R
 /**
  * A simple [Fragment] subclass.
  */
-class MainFragment : Fragment(), TabLayout.OnTabSelectedListener{
+class MainFragment : Fragment() {
 
     companion object {
         val TAG = "MainFragment"
@@ -35,18 +36,22 @@ class MainFragment : Fragment(), TabLayout.OnTabSelectedListener{
         tabs.addTab(tabs.newTab().setText(R.string.map))
         tabs.addTab(tabs.newTab().setText(R.string.timeLine))
 
-        tabs.setOnTabSelectedListener(this)
+        tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                viewPager.currentItem = tab?.position ?: 0
+            }
+
+        })
 
         viewPager.adapter = PagerAdapter(childFragmentManager, tabs.tabCount)
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
 
         return view
     }
-    override fun onTabSelected(tab: TabLayout.Tab) {
-        viewPager.setCurrentItem(tab.position)
-    }
-    override fun onTabReselected(tab: TabLayout.Tab?) {}
-    override fun onTabUnselected(tab: TabLayout.Tab?) {}
-
-
 }

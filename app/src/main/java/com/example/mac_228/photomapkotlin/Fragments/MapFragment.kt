@@ -2,12 +2,14 @@ package com.example.mac_228.photomapkotlin.Fragments
 
 
 import android.content.Context.LOCATION_SERVICE
+import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,9 +23,9 @@ import com.google.android.gms.maps.model.Marker
 
 
 class MapFragment : BaseFragment(), OnMapReadyCallback,
-                                    GoogleMap.OnMapLongClickListener,
-                                    GoogleMap.OnInfoWindowClickListener,
-                                    LocationListener{
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnInfoWindowClickListener,
+        LocationListener {
 
     companion object {
         val TAG = "MapFragment"
@@ -77,13 +79,15 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
         mapView.onLowMemory()
     }
 
-    override fun onMapReady(p0: GoogleMap) {
-        mMap = p0
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 
         mMap.setOnMapLongClickListener(this)
         mMap.setOnInfoWindowClickListener(this)
 
-        mMap.isMyLocationEnabled = true
+        if ((ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            mMap.isMyLocationEnabled = true
+        }
         mMap.uiSettings.isMyLocationButtonEnabled = false
         mMap.uiSettings.isCompassEnabled = false
         mMap.uiSettings.isZoomControlsEnabled = false
@@ -93,22 +97,23 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     private fun initializeLocationManager() {
         locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager
         provider = locationManager.getBestProvider(Criteria(), false)
-        locationManager.requestLocationUpdates(provider, 1000, 0f, this@MapFragment)
+        if ((ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            locationManager.requestLocationUpdates(provider, 1000, 0f, this@MapFragment)
+        }
     }
 
-    private fun getLastKnowLocation(): Location{
+    private fun getLastKnowLocation(): Location? {
+        if ((ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED))
+            return null
 
         locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager
         val providers = locationManager.getProviders(true)
-        var bestLocation: Location? = null
+        val bestLocation: Location?
         provider = locationManager.getBestProvider(Criteria(), false)
 
-        for (provider in providers) {
-            val l = locationManager.getLastKnownLocation(provider) ?: continue
-            if (bestLocation == null || l.getAccuracy() < bestLocation.accuracy) {bestLocation = l}
-        }
+        bestLocation = providers.map { locationManager.getLastKnownLocation(it) }.maxBy { it.accuracy }
 
-        return bestLocation!!
+        return bestLocation
     }
 
     override fun onProviderEnabled(p0: String?) {
