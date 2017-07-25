@@ -62,25 +62,6 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun checkPermissions(): Boolean {
-        val writePermission = (ContextCompat.checkSelfPermission
-        (this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-        val locationPermission = (ContextCompat.checkSelfPermission
-        (this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        val cameraPermisson = (ContextCompat.checkSelfPermission(
-                this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-
-        if (!writePermission || !locationPermission || !cameraPermisson) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                            android.Manifest.permission.CAMERA),
-                    RequestPermissions.StorageCameraLocation.ordinal)
-        }
-
-        return writePermission && locationPermission && cameraPermisson
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
