@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
@@ -17,6 +18,7 @@ import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.content.FileProvider
 import android.util.Log
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -105,13 +107,15 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
         mapView.onLowMemory()
     }
 
-    override fun onMapReady(p0: GoogleMap) {
-        mMap = p0
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 
         mMap.setOnMapLongClickListener(this)
         mMap.setOnInfoWindowClickListener(this)
 
-        mMap.isMyLocationEnabled = true
+        if ((ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            mMap.isMyLocationEnabled = true
+        }
         mMap.uiSettings.isMyLocationButtonEnabled = false
         mMap.uiSettings.isCompassEnabled = false
         mMap.uiSettings.isZoomControlsEnabled = false
@@ -141,7 +145,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
         val imageFileName = "JPEG_" + timeStamp + "_"
         val storageDir = File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM), "Camera")
-        var image: File? = null
+        val image: File?
 
         image = File.createTempFile(
                 imageFileName,
@@ -178,8 +182,8 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
             val builder = AlertDialog.Builder(activity)
             builder.setTitle(R.string.gps_off)
                     .setMessage(R.string.gps_message)
-                    .setNegativeButton(R.string.gps_negative_button) { dialogInterface, i -> dialogInterface.cancel() }
-                    .setPositiveButton(R.string.gps_positive_button) { dialogInterface, i ->
+                    .setNegativeButton(R.string.gps_negative_button) { dialogInterface, _ -> dialogInterface.cancel() }
+                    .setPositiveButton(R.string.gps_positive_button) { _, _ ->
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                         this@MapFragment.startActivityForResult(intent, GPS_IS_ON)
                     }.create().show()
@@ -187,7 +191,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     }
 
     private fun changeMode() {
-
         checkGPS()
         location = getLastKnowLocation()
 
@@ -199,36 +202,32 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
         if (!NAVIGATION_MODE) {
             NAVIGATION_MODE = true
             mMap.uiSettings.isScrollGesturesEnabled = false
-            modeFab.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorFabEnabled))
+            modeFab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorFabEnabled))
             onLocationChanged(location)
         } else {
             NAVIGATION_MODE = false
             mMap.uiSettings.isScrollGesturesEnabled = true
-            modeFab.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorFabDisabled))
+            modeFab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorFabDisabled))
         }
     }
 
     private fun initializeLocationManager() {
         locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager
         provider = locationManager.getBestProvider(Criteria(), false)
-        locationManager.requestLocationUpdates(provider, 1000, 0f, this@MapFragment)
+        if ((ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            locationManager.requestLocationUpdates(provider, 1000, 0f, this@MapFragment)
+        }
     }
 
     private fun getLastKnowLocation(): Location? {
+        if ((ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED))
+            return null
 
         locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager
         val providers = locationManager.getProviders(true)
-        var bestLocation: Location? = null
         provider = locationManager.getBestProvider(Criteria(), false)
 
-        for (provider in providers) {
-            val l = locationManager.getLastKnownLocation(provider) ?: continue
-            if (bestLocation == null || l.accuracy < bestLocation.accuracy) {
-                bestLocation = l
-            }
-        }
-
-        return bestLocation
+        return providers.map { locationManager.getLastKnownLocation(it) }.maxBy { it.accuracy }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -1,15 +1,13 @@
 package com.example.mac_228.photomapkotlin.Fragments
 
-
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.example.mac_228.photomapkotlin.Activity.MainActivity
+import com.example.mac_228.photomapkotlin.Activity.checkPermissions
 import com.example.mac_228.photomapkotlin.R
-
 
 class ErrorFragment : Fragment() {
 
@@ -26,7 +24,7 @@ class ErrorFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_error, container, false)
 
         errorText = view.findViewById(R.id.textViewError) as TextView
-        errorText.setOnClickListener { (activity as MainActivity).checkPermissions() }
+        errorText.setOnClickListener { activity.checkPermissions() }
 
         return view
     }

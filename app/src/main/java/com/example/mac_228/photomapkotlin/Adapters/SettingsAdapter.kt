@@ -2,6 +2,7 @@ package com.example.mac_228.photomapkotlin.Adapters
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -47,17 +48,17 @@ class SettingsAdapter() : RecyclerView.Adapter<SettingsAdapter.ViewHolder>() {
         val obj = list.get(position)
 
         holder.text.text = obj.text
-        holder.text.setTextColor(context.resources.getColor(obj.color))
+        holder.text.setTextColor(ContextCompat.getColor(context, obj.color))
 
         when(obj.text){
             context.getString(R.string.default_type) ->
-                holder.checkBox.buttonDrawable = context.resources.getDrawable(R.drawable.xml_checkbutton_defualt)
+                holder.checkBox.buttonDrawable = ContextCompat.getDrawable(context, R.drawable.xml_checkbutton_defualt)
             context.getString(R.string.food) ->
-                holder.checkBox.buttonDrawable = context.resources.getDrawable(R.drawable.xml_checkbutton_food)
+                holder.checkBox.buttonDrawable = ContextCompat.getDrawable(context, R.drawable.xml_checkbutton_food)
             context.getString(R.string.friends) ->
-                holder.checkBox.buttonDrawable = context.resources.getDrawable(R.drawable.xml_checkbutton_friends)
+                holder.checkBox.buttonDrawable = ContextCompat.getDrawable(context, R.drawable.xml_checkbutton_friends)
             context.getString(R.string.nature) ->
-                holder.checkBox.buttonDrawable = context.resources.getDrawable(R.drawable.xml_checkbutton_nature)
+                holder.checkBox.buttonDrawable = ContextCompat.getDrawable(context, R.drawable.xml_checkbutton_nature)
 
         }
 
@@ -74,28 +75,16 @@ class SettingsAdapter() : RecyclerView.Adapter<SettingsAdapter.ViewHolder>() {
         })
 
 
-        holder.checkBox.setOnCheckedChangeListener({ compoundButton, b ->
+        holder.checkBox.setOnCheckedChangeListener({ _, b ->
             editor.putBoolean(obj.text, b)
             editor.apply()
             SettingsActivity.SETTINGS_UPDATE = true
         })
-
-
-
     }
 
-
-
-    class ViewHolder : RecyclerView.ViewHolder {
-        var text: TextView
-        var checkBox: CheckBox
-        var layout: LinearLayout
-
-        constructor(itemView: View) : super(itemView){
-            text = itemView.findViewById(R.id.settingsTextView) as TextView
-            checkBox = itemView.findViewById(R.id.settingsCheckBox) as CheckBox
-            layout = itemView.findViewById(R.id.settingLiner) as LinearLayout
-        }
-
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var text: TextView = itemView.findViewById(R.id.settingsTextView) as TextView
+        var checkBox: CheckBox = itemView.findViewById(R.id.settingsCheckBox) as CheckBox
+        var layout: LinearLayout = itemView.findViewById(R.id.settingLiner) as LinearLayout
     }
 }
