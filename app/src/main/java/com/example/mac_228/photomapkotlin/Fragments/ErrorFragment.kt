@@ -6,8 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+<<<<<<< HEAD
 import com.example.mac_228.photomapkotlin.Activity.checkPermissions
 import com.example.mac_228.photomapkotlin.R
+=======
+import com.example.mac_228.photomapkotlin.R
+import com.example.mac_228.photomapkotlin.checkPermissions
+>>>>>>> b8a3f038500934b8b024bf53edc2dd435106f7e3
 
 class ErrorFragment : Fragment() {
 

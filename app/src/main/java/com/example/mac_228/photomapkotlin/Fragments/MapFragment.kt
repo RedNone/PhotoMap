@@ -3,8 +3,11 @@ package com.example.mac_228.photomapkotlin.Fragments
 
 import android.app.AlertDialog
 import android.content.Context.LOCATION_SERVICE
+<<<<<<< HEAD
 import android.content.Intent
 import android.content.res.ColorStateList
+=======
+>>>>>>> b8a3f038500934b8b024bf53edc2dd435106f7e3
 import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.Location
@@ -15,9 +18,12 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.support.design.widget.FloatingActionButton
+<<<<<<< HEAD
 import android.support.design.widget.Snackbar
 import android.support.v4.content.FileProvider
 import android.util.Log
+=======
+>>>>>>> b8a3f038500934b8b024bf53edc2dd435106f7e3
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.Menu
@@ -225,6 +231,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
 
         locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager
         val providers = locationManager.getProviders(true)
+<<<<<<< HEAD
         provider = locationManager.getBestProvider(Criteria(), false)
 
         return providers.map { locationManager.getLastKnownLocation(it) }.maxBy { it.accuracy }
@@ -241,6 +248,14 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
                 }
             }
         }
+=======
+        val bestLocation: Location?
+        provider = locationManager.getBestProvider(Criteria(), false)
+
+        bestLocation = providers.map { locationManager.getLastKnownLocation(it) }.maxBy { it.accuracy }
+
+        return bestLocation
+>>>>>>> b8a3f038500934b8b024bf53edc2dd435106f7e3
     }
 
     override fun onProviderEnabled(p0: String?) {

@@ -12,10 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+<<<<<<< HEAD
 import com.example.mac_228.photomapkotlin.Activity.changeFragment
 import com.example.mac_228.photomapkotlin.FireBaseManager
 import com.example.mac_228.photomapkotlin.FragmentType
 import com.example.mac_228.photomapkotlin.R
+=======
+import com.example.mac_228.photomapkotlin.*
+>>>>>>> b8a3f038500934b8b024bf53edc2dd435106f7e3
 
 
 class LoginFragment : BaseFragment() {
