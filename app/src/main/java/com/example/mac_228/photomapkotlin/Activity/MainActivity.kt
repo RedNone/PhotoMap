@@ -105,7 +105,6 @@ fun FragmentActivity.changeFragment(fragmentType: FragmentType) {
     fragmentTransaction.commit()
 }
 
-
 fun FragmentActivity.checkPermissions(): Boolean {
     val writePermission = (ContextCompat.checkSelfPermission
     (this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
