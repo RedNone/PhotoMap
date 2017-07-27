@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark"
+    tools:context="com.example.mac_228.photomapkotlin.Activity.FullPhotoActivity">
+
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/fullPhotoToolbarConteiner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbarFullPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/imageViewPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/layoutDescription"
+        android:layout_below="@+id/fullPhotoToolbarConteiner"
+        android:background="@color/dark"
+        app:srcCompat="@drawable/common_google_signin_btn_icon_dark_normal_background"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp" />
+
+
+    <LinearLayout
+        android:id="@+id/layoutDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/dark"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewPhotoDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/photo_details_text"
+            android:text=""
+            android:textColor="@color/colorText" />
+
+        <TextView
+            android:id="@+id/textViewPhotoDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/photo_details_text"
+            android:layout_marginLeft="@dimen/photo_details_text"
+            android:text=""
+            android:textColor="@color/colorText" />
+    </LinearLayout>
+
+
+</RelativeLayout>

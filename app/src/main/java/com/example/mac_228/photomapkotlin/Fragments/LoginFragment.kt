@@ -16,6 +16,7 @@ import com.example.mac_228.photomapkotlin.FireBaseManager
 import com.example.mac_228.photomapkotlin.FragmentType
 import com.example.mac_228.photomapkotlin.R
 import com.example.mac_228.photomapkotlin.*
+import com.example.mac_228.photomapkotlin.Activity.changeFragment
 
 
 class LoginFragment : BaseFragment() {

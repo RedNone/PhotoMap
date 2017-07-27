@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.mac_228.photomap.Activity.PhotoDetailsActivity">
+
+    <item
+        android:id="@+id/action_accept"
+        android:icon="@mipmap/ic_check"
+        android:orderInCategory="2"
+        android:title="@string/action_accept"
+        app:showAsAction="always" />
+
+</menu>

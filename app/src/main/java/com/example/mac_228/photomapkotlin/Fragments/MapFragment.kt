@@ -24,6 +24,8 @@ import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import com.example.mac_228.photomapkotlin.Activity.PhotoDetailsActivity
+import com.example.mac_228.photomapkotlin.Activity.checkNetwork
 import com.example.mac_228.photomapkotlin.BuildConfig
 import com.example.mac_228.photomapkotlin.R
 import com.google.android.gms.maps.*
@@ -51,6 +53,8 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     val LONG_PRESS_MAP = 0
 
     private val GPS_IS_ON = 2
+
+    lateinit var locationOfImage: LatLng
 
     lateinit var mapView: MapView
     lateinit var mMap: GoogleMap
@@ -95,6 +99,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     override fun onPause() {
         super.onPause()
         mapView.onPause()
+        locationManager.removeUpdates(this)
     }
 
     override fun onDestroy() {
@@ -145,6 +150,9 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
         val imageFileName = "JPEG_" + timeStamp + "_"
         val storageDir = File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM), "Camera")
+        if (!storageDir.exists()) {
+            storageDir.mkdirs()
+        }
         val image: File?
 
         image = File.createTempFile(
@@ -161,15 +169,21 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     }
 
     private fun openPictureDialog(typeOfCall: Int) {
+
+        if(!activity.checkNetwork()) {
+            Snackbar.make(mLayout, R.string.network_disable, Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
         val pictureDialog = PictureDialog(this)
 
         if (typeOfCall == BUTTON_PRESS) {
             pictureDialog.setTargetFragment(this, BUTTON_PRESS)
-            pictureDialog.show(fragmentManager, "asdasd")
+            pictureDialog.show(fragmentManager, pictureDialog.javaClass.name)
         }
         if (typeOfCall == LONG_PRESS_MAP) {
             pictureDialog.setTargetFragment(this, LONG_PRESS_MAP)
-            pictureDialog.show(fragmentManager, "dsdad")
+            pictureDialog.show(fragmentManager, pictureDialog.javaClass.name)
         }
 
     }
@@ -220,14 +234,15 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     }
 
     private fun getLastKnowLocation(): Location? {
-        if ((ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED))
+        if ((ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             return null
+        }
 
         locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager
         val providers = locationManager.getProviders(true)
         provider = locationManager.getBestProvider(Criteria(), false)
 
-        return providers.map { locationManager.getLastKnownLocation(it) }.maxBy { it.accuracy }
+        return providers.map { locationManager.getLastKnownLocation(it) }.filter { it != null }.maxBy { it.accuracy }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -240,14 +255,20 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
                     onLocationChanged(location)
                 }
             }
+            BUTTON_PRESS -> startActivity(Intent(context,PhotoDetailsActivity::class.java))
         }
     }
 
     override fun onProviderEnabled(p0: String?) {
-
+        location = getLastKnowLocation() ?: null
+        if(location != null) {
+            onLocationChanged(location)
+        }
     }
 
     override fun onProviderDisabled(p0: String?) {
+        checkGPS()
+        FIRST_UPDATE = false
     }
 
     override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
@@ -255,14 +276,16 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
 
     override fun onInfoWindowClick(p0: Marker) {}
 
-    override fun onMapLongClick(p0: LatLng) {  openPictureDialog(LONG_PRESS_MAP) }
+    override fun onMapLongClick(location: LatLng) {
+        openPictureDialog(LONG_PRESS_MAP)
+        locationOfImage = location
+    }
 
     override fun onLocationChanged(p0: Location?) {
 
         if (p0 == null) {
             return
         }
-
         if (!FIRST_UPDATE) {
             FIRST_UPDATE = true
             val cameraPosition = CameraPosition.Builder()

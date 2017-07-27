@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/friends_menu"
+        android:title="@string/friends" />
+    <item android:id="@+id/nature_menu"
+        android:title="@string/nature" />
+    <item android:id="@+id/defualt_menu"
+          android:title="@string/default_type"/>
+    <item android:id="@+id/food_menu"
+          android:title="@string/food"/>
+</menu>

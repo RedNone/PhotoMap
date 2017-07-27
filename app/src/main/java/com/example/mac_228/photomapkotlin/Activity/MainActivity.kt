@@ -1,7 +1,9 @@
 package com.example.mac_228.photomapkotlin.Activity
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentActivity
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.getItemId()
+        val id = item.itemId
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_logOut) {
@@ -121,4 +123,10 @@ fun FragmentActivity.checkPermissions(): Boolean {
     }
 
     return writePermission && locationPermission && cameraPermisson
+}
+
+fun FragmentActivity.checkNetwork(): Boolean {
+    val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val netWork = cm.activeNetworkInfo
+    return netWork != null && netWork.isConnectedOrConnecting
 }

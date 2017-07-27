@@ -50,9 +50,14 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyAI9Zk2fwNthLMGRe8aaN9EXT8x3kZeHa4"/>
 
-        <activity android:name=".Activity.SettingsActivity"
-                  android:theme="@style/AppTheme.NoActionBar"/>
-
+        <activity
+            android:name=".Activity.SettingsActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".Activity.PhotoDetailsActivity"
+            android:theme="@style/Transparent"/>
+        <activity android:name=".Activity.FullPhotoActivity"
+                  android:theme="@style/PhotoPreview"/>
     </application>
 
 </manifest>
