@@ -12,13 +12,25 @@ import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.mac_228.photomapkotlin.FireBaseManager
+import com.example.mac_228.photomapkotlin.ImageType
+import com.example.mac_228.photomapkotlin.Models.PhotoModel
 
 import com.example.mac_228.photomapkotlin.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 class PhotoDetailsActivity : AppCompatActivity() {
 
     companion object {
         val TAG = "PhotoDetailsActivity"
+        val TYPE_OF_IMAGE = "typeImage"
+        val NEW_IMAGE_URI = "newImageUri"
+        val NEW_IMAGE_LOCATION = "newImageLocation"
+        val EXISTING_PHOTO_ID = "existingPhotoId"
+        val NEW_IMAGE_BUTTON = 1
+        val NEW_IMAGE_LONGPRESS = 2
+        val EXISTING_PHOTO = 3
     }
 
 
@@ -27,8 +39,13 @@ class PhotoDetailsActivity : AppCompatActivity() {
     lateinit var typeOfImage: TextView
     lateinit var description: EditText
 
-    var date: String? = null
-    var newImageUri: Uri? = null
+    lateinit var date: String
+    lateinit var newImageUri: Uri
+    lateinit var coordinats: String
+    var isPhotoExisting = false
+
+    private var  mIdOfExistingPhoto: Int = 0
+    lateinit private var  mObjectOfExistingPhoto: PhotoModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +71,69 @@ class PhotoDetailsActivity : AppCompatActivity() {
 
         registerForContextMenu(typeOfImage)
 
+        checkData()
     }
+
+    private fun checkData() {
+        if (intent.getIntExtra(TAG, 0) == NEW_IMAGE_BUTTON) {
+
+            typeOfImage.setText(R.string.friends)
+
+            date = getFormatDate()
+
+            time.text = date
+
+            coordinats = intent.getStringExtra(NEW_IMAGE_LOCATION)
+
+            if (intent.getSerializableExtra(TYPE_OF_IMAGE) == ImageType.GALLERY_TYPE) {
+                newImageUri = Uri.parse(intent.getStringExtra(NEW_IMAGE_URI))
+                image.setImageURI(newImageUri)
+            }
+            if (intent.getSerializableExtra(TYPE_OF_IMAGE) == ImageType.CAMERA_TYPE) {
+                newImageUri = Uri.parse(intent.getStringExtra(NEW_IMAGE_URI))
+                image.setImageURI(newImageUri)
+            }
+            isPhotoExisting = false
+        }
+        if (intent.getIntExtra(TAG, 0) == NEW_IMAGE_LONGPRESS) {
+            typeOfImage.setText(R.string.friends)
+
+            date = getFormatDate()
+
+            time.text = date
+
+            coordinats = intent.getStringExtra(NEW_IMAGE_LOCATION)
+
+            if (intent.getSerializableExtra(TYPE_OF_IMAGE) == ImageType.GALLERY_TYPE) {
+                newImageUri = Uri.parse(intent.getStringExtra(NEW_IMAGE_URI))
+                image.setImageURI(newImageUri)
+            }
+            if (intent.getSerializableExtra(TYPE_OF_IMAGE) == ImageType.CAMERA_TYPE) {
+                newImageUri = Uri.parse(intent.getStringExtra(NEW_IMAGE_URI))
+                image.setImageURI(newImageUri)
+            }
+            isPhotoExisting = false
+        }
+
+        if (intent.getIntExtra(TAG, 0) == EXISTING_PHOTO) {
+            mIdOfExistingPhoto = Integer.valueOf(intent.getStringExtra(EXISTING_PHOTO_ID))!!
+            mObjectOfExistingPhoto = FireBaseManager.newDataList[mIdOfExistingPhoto]
+            typeOfImage.text = mObjectOfExistingPhoto.type
+            time.text = mObjectOfExistingPhoto.time
+            date = mObjectOfExistingPhoto.time
+
+            if (!TextUtils.isEmpty(mObjectOfExistingPhoto.text)) {
+                description.setText(mObjectOfExistingPhoto.text)
+            }
+            newImageUri = mObjectOfExistingPhoto.uri
+            image.setImageURI(newImageUri)
+
+            isPhotoExisting = true
+        }
+    }
+
+    private fun getFormatDate(): String = SimpleDateFormat("MMMM dd'th',yyyy - hh:mm a", Locale.ENGLISH).format(Date())
+
 
     private fun prepareIntent(): Intent? {
 
@@ -70,6 +149,19 @@ class PhotoDetailsActivity : AppCompatActivity() {
         intent.putExtra(FullPhotoActivity.IMAGE_URI, newImageUri.toString())
 
         return intent
+    }
+
+    private fun prepareNewPhotoData(): PhotoModel {
+        val newdata = PhotoModel(
+                0,
+                newImageUri,
+                date,
+                typeOfImage.text.toString(),
+                description.text.toString(),
+                coordinats
+
+        )
+        return newdata
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -97,9 +189,16 @@ class PhotoDetailsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId){
-            R.id.action_accept -> Log.d(TAG,"")
+            R.id.action_accept -> {
+                if(isPhotoExisting) {
+                    FireBaseManager.updateData(mIdOfExistingPhoto, typeOfImage.text.toString(), description.text.toString())
+                } else {
+                    FireBaseManager.sendData(prepareNewPhotoData())
+                    Log.d(TAG, prepareNewPhotoData().toString())
+                }
+            }
         }
-
+        finish()
         return super.onOptionsItemSelected(item)
     }
 }

@@ -2,8 +2,8 @@ package com.example.mac_228.photomapkotlin.Fragments
 
 
 import android.app.AlertDialog
+import android.content.*
 import android.content.Context.LOCATION_SERVICE
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.pm.PackageManager
 import android.location.Criteria
@@ -23,18 +23,22 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.RelativeLayout
-import com.example.mac_228.photomapkotlin.Activity.PhotoDetailsActivity
-import com.example.mac_228.photomapkotlin.Activity.checkNetwork
+import android.widget.TextView
+import com.example.mac_228.photomapkotlin.Activity.*
+import com.example.mac_228.photomapkotlin.Adapters.SettingsAdapter
 import com.example.mac_228.photomapkotlin.BuildConfig
+import com.example.mac_228.photomapkotlin.FireBaseManager
+import com.example.mac_228.photomapkotlin.ImageType
+import com.example.mac_228.photomapkotlin.Models.PhotoModel
 import com.example.mac_228.photomapkotlin.R
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MapFragment : BaseFragment(), OnMapReadyCallback,
@@ -49,8 +53,10 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     var FIRST_UPDATE = false
     var NAVIGATION_MODE = false
 
-    val BUTTON_PRESS = 1
+
     val LONG_PRESS_MAP = 0
+    val BUTTON_PRESS = 1
+    val EXISTING_PHOTO = 2
 
     private val GPS_IS_ON = 2
 
@@ -66,6 +72,11 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     lateinit var mLayout: RelativeLayout
     var fileUri: Uri? = null
 
+    lateinit var br: BroadcastReceiver
+
+    private var sPreferences: SharedPreferences? = null
+    lateinit var markerList: MutableList<Marker>
+    lateinit var newData: MutableList<PhotoModel>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -77,6 +88,9 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
 
         MapsInitializer.initialize(activity)
 
+        markerList = ArrayList()
+        sPreferences = activity.getSharedPreferences(SettingsAdapter.APP_PREFERENCE, Context.MODE_PRIVATE)
+
         mLayout = view.findViewById(R.id.mapRelative) as RelativeLayout
 
         modeFab = view.findViewById(R.id.floatingActionMapMode) as FloatingActionButton
@@ -87,6 +101,16 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
 
         setHasOptionsMenu(true)
 
+        br = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+
+                if (FireBaseManager.newDataList.isNotEmpty()) {
+                    Log.d(TAG, "BroadCast")
+                    prepareNewData()
+                }
+            }
+        }
+
         return view
     }
 
@@ -94,12 +118,26 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
         super.onResume()
         mapView.onResume()
         initializeLocationManager()
+        if (!FireBaseManager.newDataList.isNotEmpty()) {
+            Snackbar.make(mLayout, R.string.data_loadind, Snackbar.LENGTH_LONG).show()
+        }
+        activity.registerReceiver(br, IntentFilter(MainActivity.BROADCAST_ACTION))
+        if (FireBaseManager.dataStatusForMap === 1) {
+            prepareNewData()
+        } else {
+            if (SettingsActivity.SETTINGS_UPDATE === true) {
+                prepareNewData()
+                SettingsActivity.SETTINGS_UPDATE = false
+            }
+        }
+
     }
 
     override fun onPause() {
         super.onPause()
         mapView.onPause()
         locationManager.removeUpdates(this)
+        activity.unregisterReceiver(br)
     }
 
     override fun onDestroy() {
@@ -110,6 +148,128 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
     override fun onLowMemory() {
         super.onLowMemory()
         mapView.onLowMemory()
+    }
+
+    private fun prepareNewData() {
+        if (!FireBaseManager.newDataList.isNotEmpty()) {
+            return
+        }
+        Log.d(TAG, "PrepareNewData")
+        val friends = sPreferences?.getBoolean(getString(R.string.friends), true)
+
+        val nature = sPreferences?.getBoolean(getString(R.string.nature), true)
+
+        val default_type = sPreferences?.getBoolean(getString(R.string.default_type), true)
+
+        val food = sPreferences?.getBoolean(getString(R.string.food), true)
+
+
+        newData = ArrayList<PhotoModel>()
+
+        for (obj in FireBaseManager.newDataList) {
+            newData.add(obj.copy())
+        }
+
+
+        var i = 0
+        while (i < newData.size) {
+            val model = newData[i]
+            if (model.type.equals(getString(R.string.friends))) {
+                if (friends != true) {
+                    newData.removeAt(i)
+                    i--
+                }
+            }
+            if (model.type.equals(getString(R.string.nature))) {
+                if (nature != true) {
+                    newData.removeAt(i)
+                    i--
+                }
+            }
+            if (model.type.equals(getString(R.string.default_type))) {
+                if (default_type != true) {
+                    newData.removeAt(i)
+                    i--
+                }
+            }
+            if (model.type.equals(getString(R.string.food))) {
+                if (food != true) {
+                    newData.removeAt(i)
+                    i--
+                }
+            }
+            i++
+        }
+
+
+        for (i in newData.indices) {
+            newData[i].time = formatTime(newData[i].time)
+        }
+
+
+        addMarkers(newData)
+        FireBaseManager.dataStatusForMap = 0
+
+    }
+
+    private fun addMarkers(newData: List<PhotoModel>) {
+
+        if (!markerList.isEmpty()) {
+            for (i in markerList.indices) {
+                markerList[i].remove()
+            }
+
+        }
+        markerList.clear()
+        for (i in newData.indices) {
+            Log.d(TAG, newData[i].uri.toString())
+
+            val marker = mMap.addMarker(MarkerOptions()
+                    .position(getLatLng(newData[i].coordinats)))
+
+            if (newData[i].type.equals(getString(R.string.friends))) {
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            }
+            if (newData[i].type.equals(getString(R.string.nature))) {
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+            }
+            if (newData[i].type.equals(getString(R.string.default_type))) {
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            }
+            if (newData[i].type.equals(getString(R.string.food))) {
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+            }
+
+            marker.title = newData[i].id.toString()
+            markerList.add(marker)
+
+        }
+    }
+
+    private fun formatTime(time: String): String {
+
+        var newTime: String? = null
+        val format = SimpleDateFormat("MMMM dd'th',yyyy - hh:mm a", Locale.ENGLISH)
+        try{
+            val date = format.parse(time)
+            val newformat = SimpleDateFormat("yyyy'.'MM'.'dd")
+            newTime = newformat.format(date)
+        } catch (e: java.text.ParseException) {
+            Log.e(TAG, e.printStackTrace().toString())
+        }
+
+        return newTime as String
+    }
+
+
+    private fun getLatLng(str: String): LatLng {
+        val first = str.indexOf("(")
+        val second = str.indexOf(",")
+        val last = str.indexOf(")")
+
+        val lat = java.lang.Double.parseDouble(str.substring(first + 1, second))
+        val lng = java.lang.Double.parseDouble(str.substring(second + 1, last))
+        return LatLng(lat, lng)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -125,6 +285,8 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
         mMap.uiSettings.isCompassEnabled = false
         mMap.uiSettings.isZoomControlsEnabled = false
         mMap.uiSettings.isMapToolbarEnabled = false
+
+        mMap.setInfoWindowAdapter(MyInfoWindowAdapter())
 
         location = getLastKnowLocation() ?: return
         onLocationChanged(location)
@@ -165,12 +327,14 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
             fileUri = FileProvider.getUriForFile(activity,
                     BuildConfig.APPLICATION_ID + ".provider",
                     image)
+        } else {
+            Snackbar.make(mLayout, R.string.error, Snackbar.LENGTH_SHORT).show()
         }
     }
 
     private fun openPictureDialog(typeOfCall: Int) {
 
-        if(!activity.checkNetwork()) {
+        if (!activity.checkNetwork()) {
             Snackbar.make(mLayout, R.string.network_disable, Snackbar.LENGTH_SHORT).show()
             return
         }
@@ -255,13 +419,93 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
                     onLocationChanged(location)
                 }
             }
-            BUTTON_PRESS -> startActivity(Intent(context,PhotoDetailsActivity::class.java))
+            BUTTON_PRESS -> {
+                if (data != null) {
+                    if (!activity.checkNetwork() && location == null) {
+                        Snackbar.make(mLayout, R.string.error, Snackbar.LENGTH_SHORT).show()
+                        return
+                    }
+                    if (data.data != null) {
+
+                        startActivity(prepareImageIntent(data.data.toString(), BUTTON_PRESS, ImageType.GALLERY_TYPE))
+                    }
+
+                } else {
+                    if (fileUri != null) {
+                        startActivity(prepareImageIntent(fileUri.toString(), BUTTON_PRESS, ImageType.CAMERA_TYPE))
+                        fileUri = null
+                    }
+                }
+
+            }
+            LONG_PRESS_MAP -> {
+                if (data != null) {
+                    if (!activity.checkNetwork() && location == null) {
+                        Snackbar.make(mLayout, R.string.error, Snackbar.LENGTH_SHORT).show()
+                        return
+                    }
+                    if (data.data != null) {
+                        startActivity(prepareImageIntent(data.data.toString(), LONG_PRESS_MAP, ImageType.GALLERY_TYPE))
+                    }
+                } else {
+                    if (fileUri != null) {
+                        startActivity(prepareImageIntent(fileUri.toString(), BUTTON_PRESS, ImageType.CAMERA_TYPE))
+                        fileUri = null
+                    }
+                }
+
+            }
         }
+    }
+
+    private fun prepareImageIntent(data: String, flag: Int, type: ImageType): Intent {
+        val intent = Intent(activity, PhotoDetailsActivity::class.java)
+
+        if (flag == BUTTON_PRESS) {
+            if (type == ImageType.GALLERY_TYPE) {
+                intent.putExtra(PhotoDetailsActivity.TAG, PhotoDetailsActivity.NEW_IMAGE_BUTTON)
+                intent.putExtra(PhotoDetailsActivity.NEW_IMAGE_URI, data)
+                intent.putExtra(PhotoDetailsActivity.TYPE_OF_IMAGE, ImageType.GALLERY_TYPE)
+                intent.putExtra(PhotoDetailsActivity.NEW_IMAGE_LOCATION, getLatLng())
+
+            }
+            if (type == ImageType.CAMERA_TYPE) {
+                intent.putExtra(PhotoDetailsActivity.TAG, PhotoDetailsActivity.NEW_IMAGE_BUTTON)
+                intent.putExtra(PhotoDetailsActivity.NEW_IMAGE_URI, data)
+                intent.putExtra(PhotoDetailsActivity.TYPE_OF_IMAGE, ImageType.CAMERA_TYPE)
+                intent.putExtra(PhotoDetailsActivity.NEW_IMAGE_LOCATION, getLatLng())
+            }
+        }
+        if (flag == LONG_PRESS_MAP) {
+            if (type == ImageType.GALLERY_TYPE) {
+                intent.putExtra(PhotoDetailsActivity.TAG, PhotoDetailsActivity.NEW_IMAGE_LONGPRESS)
+                intent.putExtra(PhotoDetailsActivity.NEW_IMAGE_URI, data)
+                intent.putExtra(PhotoDetailsActivity.TYPE_OF_IMAGE, ImageType.GALLERY_TYPE)
+                intent.putExtra(PhotoDetailsActivity.NEW_IMAGE_LOCATION, locationOfImage.toString())
+            }
+            if (type == ImageType.CAMERA_TYPE) {
+                intent.putExtra(PhotoDetailsActivity.TAG, PhotoDetailsActivity.NEW_IMAGE_LONGPRESS)
+                intent.putExtra(PhotoDetailsActivity.NEW_IMAGE_URI, data)
+                intent.putExtra(PhotoDetailsActivity.TYPE_OF_IMAGE, ImageType.CAMERA_TYPE)
+                intent.putExtra(PhotoDetailsActivity.NEW_IMAGE_LOCATION, locationOfImage.toString())
+            }
+
+        }
+        if (flag == EXISTING_PHOTO) {
+            intent.putExtra(PhotoDetailsActivity.TAG, PhotoDetailsActivity.EXISTING_PHOTO)
+            intent.putExtra(PhotoDetailsActivity.EXISTING_PHOTO_ID, data)
+        }
+        return intent
+    }
+
+    private fun getLatLng(): String {
+        return "lat/lng:(${location?.latitude},${location?.longitude})"
+
     }
 
     override fun onProviderEnabled(p0: String?) {
         location = getLastKnowLocation() ?: null
-        if(location != null) {
+        if (location != null) {
             onLocationChanged(location)
         }
     }
@@ -271,10 +515,11 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
         FIRST_UPDATE = false
     }
 
-    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
-    }
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {}
 
-    override fun onInfoWindowClick(p0: Marker) {}
+    override fun onInfoWindowClick(marker: Marker) {
+        startActivity(prepareImageIntent(marker.title.toString(), EXISTING_PHOTO, ImageType.EXISTING_TYPE))
+    }
 
     override fun onMapLongClick(location: LatLng) {
         openPictureDialog(LONG_PRESS_MAP)
@@ -303,6 +548,38 @@ class MapFragment : BaseFragment(), OnMapReadyCallback,
                     .build()                   // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         }
+    }
+
+    internal inner class MyInfoWindowAdapter : GoogleMap.InfoWindowAdapter {
+
+        private val myContentsView: View = activity.layoutInflater.inflate(R.layout.marker_layout, null)
+
+        override fun getInfoContents(marker: Marker): View {
+            var obj: PhotoModel? = null
+            for (model in newData) {
+                if (model.id === marker.title.toInt()) {
+                    obj = model
+                    break
+                }
+            }
+
+            val tvTitle = myContentsView.findViewById(R.id.textViewMarkerData) as TextView
+            tvTitle.text = obj?.text
+            val tvSnippet = myContentsView.findViewById(R.id.textViewMarkerDate) as TextView
+            tvSnippet.text = obj?.time
+
+            val imageView = myContentsView.findViewById(R.id.imageViewMarker) as ImageView
+            imageView.setImageURI(obj?.uri)
+
+
+            return myContentsView
+        }
+
+        override fun getInfoWindow(marker: Marker): View? {
+            // TODO Auto-generated method stub
+            return null
+        }
+
     }
 
 }

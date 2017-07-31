@@ -10,6 +10,12 @@ enum class FragmentType {
     ERROR
 }
 
+enum class ImageType {
+    CAMERA_TYPE,
+    GALLERY_TYPE,
+    EXISTING_TYPE
+}
+
 enum class RequestPermissions(val permission: Int) {
     StorageCameraLocation(1)
 }

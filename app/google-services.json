@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "514128365861-sdo22kvdkvqn7hif21k7kuvkmv95tvo6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mac_228.photomapkotlin",
+            "certificate_hash": "f50d4dd995928c19be5e41fae25de1a39adba371"
+          }
+        },
+        {
           "client_id": "514128365861-e0bc3pr7hbesisnht0rlsm5265qi817u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

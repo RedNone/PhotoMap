@@ -25,6 +25,13 @@ import com.google.firebase.FirebaseApp
 class MainActivity : AppCompatActivity() {
     lateinit var toolbar: Toolbar
 
+    companion object {
+        val PARAM_TASK = "GETDATA"
+        val STATUS_COME = true
+        val BROADCAST_ACTION = "com.example.mac_228.photomap"
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -33,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         FirebaseApp.initializeApp(this)
+        FireBaseManager.context = this
 
         if (FireBaseManager.mFireBaseAuth.currentUser == null) {
             changeFragment(FragmentType.LOGIN)
@@ -54,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_logOut) {
             FireBaseManager.mFireBaseAuth.signOut()
-            changeFragment(FragmentType.MAIN)
+            changeFragment(FragmentType.LOGIN)
             return true
         }
         if (id == R.id.action_settings) {
@@ -86,6 +94,7 @@ fun FragmentActivity.changeFragment(fragmentType: FragmentType) {
             if (supportFragmentManager.findFragmentByTag(LoginFragment.TAG) == null) {
                 fragmentTransaction.replace(R.id.conteiner, LoginFragment(), LoginFragment.TAG)
             }
+            FireBaseManager.stopDownloadData()
         }
         FragmentType.ERROR -> {
             if (supportFragmentManager.findFragmentByTag(ErrorFragment.TAG) == null) {
@@ -99,6 +108,7 @@ fun FragmentActivity.changeFragment(fragmentType: FragmentType) {
             if (supportFragmentManager.findFragmentByTag(MainFragment.TAG) == null) {
                 fragmentTransaction.replace(R.id.conteiner, MainFragment(), MainFragment.TAG)
             }
+            FireBaseManager.startDownloadData()
         }
     }
 
