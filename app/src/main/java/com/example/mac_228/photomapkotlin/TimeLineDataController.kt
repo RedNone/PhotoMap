@@ -43,9 +43,7 @@ class TimeLineDataController(newDataList: MutableList<PhotoModel>) {
 
         dataForTimeLine.clear()
 
-        for(obj in comeList){
-            dataForTimeLine.add(prepareTimeLineModel(obj))
-        }
+        comeList.forEach { dataForTimeLine.add(prepareTimeLineModel(it)) }
 
         for (i in dataForTimeLine.indices) {
             if (i == 0) {
@@ -55,7 +53,7 @@ class TimeLineDataController(newDataList: MutableList<PhotoModel>) {
             if (i + 1 != dataForTimeLine.size) {
                 val firstIndex = dataForTimeLine[i].data?.mIndex ?: ""
                 val nextIndex = dataForTimeLine[i + 1].data?.mIndex ?: ""
-                if (!firstIndex.equals(nextIndex)) {
+                if (firstIndex != nextIndex) {
                     dataForTimeLine.add(i + 1, TimeLineDataModel(nextIndex))
                 }
             }
@@ -63,41 +61,34 @@ class TimeLineDataController(newDataList: MutableList<PhotoModel>) {
     }
 
     private fun  prepareTimeLineModel(model: PhotoModel): TimeLineDataModel {
-        var newTime = ""
-
-        val format = SimpleDateFormat("MMMM dd'th',yyyy - hh:mm a", Locale.ENGLISH)
-        try {
-            val date = format.parse(model.time)
-            val newformat = SimpleDateFormat("yyyy'.'MM'.'dd", Locale.ENGLISH)
-            newTime = newformat.format(date)
-        } catch (e: ParseException) {
-            e.printStackTrace()
-        }
-
+        val time = getTimeString(model.time)
 
         val newText = model.text.replace("#([A-Za-z0-9_-]+)".toRegex(), "")
 
         return TimeLineDataModel(model.id,
                 model.uri,
-                newTime,
+                time.second,
                 newText,
                 model.type,
-                getTimeString(model))
+                time.first)
     }
 
-    private fun getTimeString(model: PhotoModel): String? {
+    private fun getTimeString(time: String): Pair<String, String> {
 
-        var newTime: String? = null
+        var newTime = ""
+        var newTime2 = ""
         val format = SimpleDateFormat("MMMM dd'th',yyyy - hh:mm a", Locale.ENGLISH)
         try {
-            val date = format.parse(model.time)
+            val date = format.parse(time)
             val newformat = SimpleDateFormat("MMMM yyyy", Locale.ENGLISH)
+            val newformat2 = SimpleDateFormat("yyyy'.'MM'.'dd", Locale.ENGLISH)
             newTime = newformat.format(date)
+            newTime2 = newformat2.format(date)
         } catch (e: ParseException) {
             e.printStackTrace()
         }
 
-        return newTime
+        return Pair(newTime, newTime2)
     }
 
     fun prepareHashTagsList(newText: String) {

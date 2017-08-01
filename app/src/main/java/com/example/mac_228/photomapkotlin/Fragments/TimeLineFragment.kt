@@ -22,10 +22,10 @@ class TimeLineFragment : BaseFragment() {
         val TAG = "TimeLineFragment"
     }
 
-    lateinit private var  searchMenuItem: MenuItem
+    lateinit private var searchMenuItem: MenuItem
 
-    lateinit private var  mSearchView: SearchView
-    lateinit private var  textListener: SearchView.OnQueryTextListener
+    lateinit private var mSearchView: SearchView
+    lateinit private var textListener: SearchView.OnQueryTextListener
 
     lateinit var recyclerView: RecyclerView
     lateinit var progressBar: ProgressBar
@@ -42,16 +42,16 @@ class TimeLineFragment : BaseFragment() {
 
         broadCastReceiver = object : BroadcastReceiver() {
             override fun onReceive(p0: Context?, p1: Intent?) {
-                    if(FireBaseManager.newDataList.isNotEmpty()){
-                        dataController = TimeLineDataController(FireBaseManager.newDataList)
-                        prepareRecyclerView()
-                    }
+                if (FireBaseManager.newDataList.isNotEmpty()) {
+                    dataController = TimeLineDataController(FireBaseManager.newDataList)
+                    prepareRecyclerView()
+                }
             }
         }
 
         textListener = object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
-                if(FireBaseManager.newDataList.isNotEmpty()){
+                if (FireBaseManager.newDataList.isNotEmpty()) {
                     if (newText != null) {
                         dataController.prepareHashTagsList(newText)
                         prepareRecyclerView()
@@ -68,10 +68,10 @@ class TimeLineFragment : BaseFragment() {
 
         setHasOptionsMenu(true)
 
-        return  view
+        return view
     }
 
-    fun prepareRecyclerView(){
+    fun prepareRecyclerView() {
         progressBar.visibility = View.GONE
         recyclerView.visibility = View.VISIBLE
 
@@ -86,16 +86,15 @@ class TimeLineFragment : BaseFragment() {
     }
 
 
-
     override fun onResume() {
         super.onResume()
 
         val intFilter = IntentFilter(MainActivity.BROADCAST_ACTION)
         activity.registerReceiver(broadCastReceiver, intFilter)
-        if(FireBaseManager.newDataList.isEmpty()){
+        if (FireBaseManager.newDataList.isEmpty()) {
             recyclerView.visibility = View.GONE
         }
-        if(FireBaseManager.dataStatusForTimeLine == 1){
+        if (FireBaseManager.dataStatusForTimeLine == 1) {
             dataController = TimeLineDataController(FireBaseManager.newDataList)
             prepareRecyclerView()
         }
@@ -118,7 +117,6 @@ class TimeLineFragment : BaseFragment() {
         action_search.isVisible = true
         action_logout.isVisible = true
     }
-
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
